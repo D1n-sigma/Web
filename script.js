@@ -1,4 +1,3 @@
-// script.js
 document.getElementById('bar').addEventListener('click', () => {
     document.getElementById('navbar').classList.add('active');
 });
@@ -42,7 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const selectedProductId = localStorage.getItem("selectedProductId");
   
     if (selectedProductId) {
-      // Simulasi data produk
       const products = [
         {
           id: 1,
@@ -62,11 +60,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       ];
   
-      // Cari produk berdasarkan ID
       const product = products.find(p => p.id == selectedProductId);
   
       if (product) {
-        // Isi halaman dengan detail produk
+
         document.getElementById("MainImg").src = product.image;
         document.querySelector(".single-pro-details h6").textContent = `Home / ${product.category}`;
         document.querySelector(".single-pro-details h4").textContent = product.name;
@@ -75,47 +72,34 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   });
-// ambil semua input quantity
 const quantityInputs = document.querySelectorAll('.quantity');
 
-// tambahkan event listener ke setiap input quantity
 quantityInputs.forEach(input => {
     input.addEventListener('input', updateSubtotal);
 });
 
-// fungsi untuk mengupdate subtotal
 function updateSubtotal() {
-    // ambil semua baris dalam tabel
     const rows = document.querySelectorAll('#cartTable tr');
 
-    // inisialisasi total belanjaan
     let totalBelanjaan = 0;
 
-    // iterasi setiap baris
     rows.forEach(row => {
-        // cari elemen-elemen yang dibutuhkan
         const priceElement = row.querySelector('.price');
         const quantityInput = row.querySelector('.quantity');
         const subtotalElement = row.querySelector('.subtotal');
 
-        // pastikan semua elemen ada
         if (priceElement && quantityInput && subtotalElement) {
-            // ambil harga dan jumlah
             const price = parseInt(priceElement.textContent.replace('Rp. ', '').replace('.', ''));
             const quantity = parseInt(quantityInput.value);
 
-            // hitung subtotal
             const subtotal = price * quantity;
 
-            // update subtotal di tampilan
             subtotalElement.textContent = `Rp. ${subtotal.toLocaleString('id-ID')}`;
 
-            // tambahkan ke total belanjaan
             totalBelanjaan += subtotal;
         }
     });
 
-    // update total belanjaan
     document.getElementById('total-belanjaan').textContent = totalBelanjaan.toLocaleString('id-ID');
     document.getElementById('total').textContent = totalBelanjaan.toLocaleString('id-ID');
 }
