@@ -104,6 +104,26 @@
                     <button class="normal"><a href="chekout.html">Checkout</button></a> 
                 </div>
         </section>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+    const checkoutButton = document.querySelector('.checkout');
+    if (checkoutButton) {
+        checkoutButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Verify cart has items
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            if (cart.length === 0) {
+                alert('Keranjang belanja Anda kosong. Silakan tambahkan produk terlebih dahulu.');
+                return;
+            }
+            
+            // Proceed to checkout page
+            window.location.href = '/checkout.html';
+        });
+    }
+});
+        </script
 
         <footer class="section-p1">
             <div class="col">
