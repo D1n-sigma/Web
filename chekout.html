@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Your Store</title>
+    <style>
+        .checkout-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: 'Spartan', sans-serif;
+        }
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #222;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e9e1;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .order-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e9e1;
+        }
+        .submit-button {
+            background-color: #088178;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .submit-button:hover {
+            background-color: #066a63;
+        }
+        .error {
+            color: #d1411e;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-container">
+        <h1>Checkout</h1>
+        <div class="checkout-grid">
+            <div class="checkout-form">
+                <h2>Informasi Pengiriman</h2>
+                <form id="checkoutForm">
+                    <div class="form-group">
+                        <label for="fullName">Nama Lengkap</label>
+                        <input type="text" id="fullName" required>
+                        <div class="error" id="fullNameError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                        <div class="error" id="emailError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Nomor Telepon</label>
+                        <input type="tel" id="phone" required>
+                        <div class="error" id="phoneError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Alamat Lengkap</label>
+                        <input type="text" id="address" required>
+                        <div class="error" id="addressError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">Kota</label>
+                        <input type="text" id="city" required>
+                        <div class="error" id="cityError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="postalCode">Kode Pos</label>
+                        <input type="text" id="postalCode" required>
+                        <div class="error" id="postalCodeError"></div>
+                    </div>
+                    
+                    <h2>Metode Pembayaran</h2>
+                    <div class="form-group">
+                        <label for="paymentMethod">Pilih Metode Pembayaran</label>
+                        <select id="paymentMethod" required>
+                            <option value="">Pilih metode pembayaran</option>
+                            <option value="transfer">Transfer Bank</option>
+                            <option value="emoney">E-Money</option>
+                            <option value="cod">Cash on Delivery</option>
+                        </select>
+                        <div class="error" id="paymentMethodError"></div>
+                    </div>
+                    
+                    <button type="submit" class="submit-button">Proses Pembayaran </button>
+                </form>
+            </div>
+            
+            <div class="order-summary">
+                <h2>Ringkasan Pesanan</h2>
+                <div id="orderItems"></div>
+                <div class="order-item">
+                    <span>Total Belanjaan</span>
+                    <span id="subtotal"></span>
+                </div>
+                <div class="order-item">
+                    <span>Pengiriman</span>
+                    <span>Gratis</span>
+                </div>
+                <div class="order-item" style="font-weight: bold;">
+                    <span>Total</span>
+                    <span id="total"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load cart data
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const orderItems = document.getElementById('orderItems');
+            const subtotalElement = document.getElementById('subtotal');
+            const totalElement = document.getElementById('total');
+            
+            // Calculate and display order summary
+            let subtotal = 0;
+            cart.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'order-item';
+                const price = parseInt(item.price.replace('Rp. ', '').replace(/\./g, ''));
+                subtotal += price * item.quantity;
+                
+                itemElement.innerHTML = `
+                    <span>${item.name} x ${item.quantity}</span>
+                    <span>Rp. ${(price * item.quantity).toLocaleString('id-ID')}</span>
+                `;
+                orderItems.appendChild(itemElement);
+            });
+            
+            subtotalElement.textContent = `Rp. ${subtotal.toLocaleString('id-ID')}`;
+            totalElement.textContent = `Rp. ${subtotal.toLocaleString('id-ID')}`;
+            
+            // Form validation and submission
+            const form = document.getElementById('checkoutForm');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (validateForm()) {
+                    processCheckout();
+                }
+            });
+
+            function validateForm() {
+                let isValid = true;
+                
+                // Clear previous errors
+                document.querySelectorAll('.error').forEach(error => error.textContent = '');
+                
+                // Validate full name
+                const fullName = document.getElementById('fullName').value;
+                if (fullName.length < 3) {
+                    document.getElementById('fullNameError').textContent = 'Nama harus minimal 3 karakter';
+                    isValid = false;
+                }
+                
+                // Validate email
+                const email = document.getElementById('email').value;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    document.getElementById('emailError').textContent = 'Email tidak valid';
+                    isValid = false;
+                }
+                
+                // Validate phone
+                const phone = document.getElementById('phone').value;
+                const phoneRegex = /^08[0-9]{8,11}$/;
+                if (!phoneRegex.test(phone)) {
+                    document.getElementById('phoneError').textContent = 'Nomor telepon tidak valid (format: 08xxxxxxxxxx)';
+                    isValid = false;
+                }
+                
+                // Validate address
+                const address = document.getElementById('address').value;
+                if (address.length < 10) {
+                    document.getElementById('addressError').textContent = 'Alamat terlalu pendek';
+                    isValid = false;
+                }
+                
+                // Validate postal code
+                const postalCode = document.getElementById('postalCode').value;
+                const postalCodeRegex = /^[0-9]{5}$/;
+                if (!postalCodeRegex.test(postalCode)) {
+                    document.getElementById('postalCodeError').textContent = 'Kode pos harus 5 digit';
+                    isValid = false;
+                }
+                
+                // Validate payment method
+                const paymentMethod = document.getElementById('paymentMethod').value;
+                if (!paymentMethod) {
+                    document.getElementById('paymentMethodError').textContent = 'Pilih metode pembayaran';
+                    isValid = false;
+                }
+                
+                return isValid;
+            }
+
+            function processCheckout() {
+    // Show success message
+    alert('Pesanan Anda sedang diproses! Terima kasih telah berbelanja.');
+    
+    // Clear the shopping cart
+    localStorage.removeItem('cart');
+    
+    // Use the correct relative path to index.html
+    window.location.href = 'index.html';
+}
+        });
+    </script>
+</body>
+</html>
