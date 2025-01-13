@@ -140,6 +140,13 @@ function updateLocalStorage() {
           id: Date.now()
       });
   });
+function processCheckout() {
 
+    alert('Pesanan Anda sedang diproses! Terima kasih telah berbelanja.');
+  
+    localStorage.removeItem('cart');
+    
+    window.location.href = 'index.html';
+}
   localStorage.setItem('cart', JSON.stringify(cart));
 }
