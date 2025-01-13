@@ -140,6 +140,24 @@ function updateLocalStorage() {
           id: Date.now()
       });
   });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const checkoutButton = document.querySelector('.checkout');
+    if (checkoutButton) {
+        checkoutButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            if (cart.length === 0) {
+                alert('Keranjang belanja Anda kosong. Silakan tambahkan produk terlebih dahulu.');
+                return;
+            }
+          
+            window.location.href = '/checkout.html';
+        });
+    }
+});
+  
 function processCheckout() {
 
     alert('Pesanan Anda sedang diproses! Terima kasih telah berbelanja.');
