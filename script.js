@@ -1,10 +1,8 @@
-// Cart management system
 document.addEventListener('DOMContentLoaded', function() {
-  // Initialize cart from localStorage or create empty array
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
   document.querySelectorAll('.pro a').forEach(link => {
     link.addEventListener('click', (e) => {
-        e.preventDefault(); // Jika ingin mencegah redirect untuk debug
+        e.preventDefault();
         console.log('Produk diklik:', link);
     });
 });
@@ -14,48 +12,37 @@ document.querySelectorAll('.pro').forEach(product => {
     });
 });
   
-  // Add to cart functionality for product detail page
   const addToCartButton = document.querySelector('.single-pro-details button.normal');
   if (addToCartButton) {
       addToCartButton.addEventListener('click', function() {
-          // Get product details
           const productName = document.querySelector('.single-pro-details h4').textContent;
           const price = document.querySelector('.single-pro-details h2').textContent;
           const quantity = parseInt(document.querySelector('.single-pro-details input[type="number"]').value);
           const productImage = document.querySelector('#MainImg').src;
-
-          // Create cart item object
           const cartItem = {
               name: productName,
               price: price,
               quantity: quantity,
               image: productImage,
-              id: Date.now() // Unique identifier for the item
+              id: Date.now() 
           };
 
-          // Add to cart array
           cart.push(cartItem);
           
-          // Save to localStorage
           localStorage.setItem('cart', JSON.stringify(cart));
 
-          // Show success message
           alert('Product added to cart successfully!');
       });
   }
 });
 
-// Cart page functionality
 document.addEventListener('DOMContentLoaded', function() {
-  // Populate cart table if on cart page
   const cartTable = document.getElementById('cartTable');
   if (cartTable) {
       const cart = JSON.parse(localStorage.getItem('cart')) || [];
-      
-      // Clear existing rows
+
       cartTable.innerHTML = '';
       
-      // Add each cart item to the table
       cart.forEach(item => {
           const row = document.createElement('tr');
           row.innerHTML = `
@@ -69,13 +56,11 @@ document.addEventListener('DOMContentLoaded', function() {
           cartTable.appendChild(row);
       });
 
-      // Initialize event listeners for remove buttons and quantity inputs
       initializeCartEventListeners();
       updateAllTotals();
   }
 });
 
-// Helper functions
 function formatCurrency(amount) {
   return 'Rp. ' + amount.toLocaleString('id-ID');
 }
@@ -103,7 +88,6 @@ function updateAllTotals() {
       }
   });
 
-  // Update total displays
   const totalBelanjaanElement = document.getElementById('total-belanjaan');
   const totalElement = document.getElementById('total');
 
@@ -117,7 +101,6 @@ function updateAllTotals() {
 }
 
 function initializeCartEventListeners() {
-  // Quantity change handlers
   const quantityInputs = document.querySelectorAll('.quantity');
   quantityInputs.forEach(input => {
       input.addEventListener('input', function() {
@@ -127,7 +110,6 @@ function initializeCartEventListeners() {
       });
   });
 
-  // Remove button handlers
   const removeButtons = document.querySelectorAll('.fa-circle-xmark');
   removeButtons.forEach(button => {
       button.addEventListener('click', function(e) {
